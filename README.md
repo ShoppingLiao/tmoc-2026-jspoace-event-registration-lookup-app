@@ -13,7 +13,7 @@
 ## 🚀 線上展示
 
 > 請將此處替換為您的 GitHub Pages 網址
-> 
+>
 > 範例：`https://shoppingliao.github.io/tmoc-2026-jspoace-event-registration-lookup-app/`
 
 ## 📋 系統需求
@@ -24,12 +24,14 @@
 ## 🛠️ 技術架構
 
 ### 前端
+
 - HTML5
 - CSS3（含響應式設計）
 - JavaScript (ES6+)
 - Fetch API
 
 ### 後端
+
 - Google Apps Script
 - Google Sheets（作為資料庫）
 
@@ -137,12 +139,15 @@ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 ## 🐛 常見問題
 
 ### Q: 查詢時出現 CORS 錯誤？
+
 A: 請確認 Google Apps Script 已正確設定並重新部署，並將存取權限設為「任何人」。
 
 ### Q: 顯示 404 錯誤？
+
 A: 請檢查 API_URL 是否正確，並確認 Google Apps Script 已成功部署。
 
 ### Q: 手機上顯示不正常？
+
 A: 本專案已包含響應式設計，請清除瀏覽器快取後重試。
 
 ## 📄 授權
@@ -162,6 +167,7 @@ A: 本專案已包含響應式設計，請清除瀏覽器快取後重試。
 ## 📮 聯絡方式
 
 如有任何問題或建議，歡迎：
+
 - 建立 Issue
 - 發送 Pull Request
 - 直接聯絡專案維護者

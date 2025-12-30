@@ -143,7 +143,10 @@ function showRegistrationInfo(data) {
 
   const html = `
     <h3>✅ 查詢成功</h3>
-    <div class="serial-number">${data.serialNumber}</div>
+    <div class="serial-number-container">
+      <div class="serial-number-label">您的報名序號為：</div>
+      <div class="serial-number">${data.serialNumber}</div>
+    </div>
     <div class="info-table">
       <div class="info-row">
         <span class="info-label">姓名：</span>
