@@ -160,7 +160,7 @@ function showRegistrationInfo(data) {
         data.phone
           ? `
       <div class="info-row">
-        <span class="info-label">電話：</span>
+        <span class="info-label">車主姓名：</span>
         <span class="info-value">${data.phone}</span>
       </div>
       `
