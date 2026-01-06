@@ -15,7 +15,7 @@ let currentEmail = "";
 emailInput.addEventListener("input", () => {
   const value = emailInput.value.trim();
   const adminSection = document.querySelector(".admin-section");
-  
+
   if (value === "TMOCTMOC") {
     adminSection.style.display = "block";
   } else {
@@ -254,6 +254,9 @@ function showPendingList(list) {
 
   let html = `
     <h3>📋 待邀請清單 <span class="pending-count">${list.length}</span></h3>
+    <button id="sendInvitationBtn" class="btn btn-send-invitation" style="margin: 15px 0; width: 100%;">
+      📧 寄出邀請信給所有人 (${list.length} 人)
+    </button>
     <div style="margin-top: 15px;">
   `;
 
@@ -284,4 +287,63 @@ function showPendingList(list) {
 
   html += `</div>`;
   pendingListDiv.innerHTML = html;
+  
+  // 綁定寄出邀請信按鈕事件
+  const sendInvitationBtn = document.getElementById("sendInvitationBtn");
+  if (sendInvitationBtn) {
+    sendInvitationBtn.addEventListener("click", () => sendInvitationEmails(list));
+  }
+}
+
+// 寄出邀請信
+async function sendInvitationEmails(list) {
+  const sendInvitationBtn = document.getElementById("sendInvitationBtn");
+  
+  // 確認對話框
+  if (!confirm(`確定要寄出邀請信給 ${list.length} 位報名者嗎？`)) {
+    return;
+  }
+  
+  try {
+    sendInvitationBtn.disabled = true;
+    sendInvitationBtn.textContent = "📧 發送中，請稍候...";
+    
+    // 收集所有 email
+    const emails = list.map(item => item.email).filter(email => email);
+    
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendInvitations",
+        emails: emails
+      }),
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const text = await response.text();
+    console.log("Response text:", text);
+
+    const data = JSON.parse(text);
+    console.log("Parsed data:", data);
+
+    if (data.status === "success") {
+      alert(`✅ 成功！已寄出 ${data.sentCount || emails.length} 封邀請信，並更新狀態為「已完成」`);
+      // 重新載入清單
+      getPendingListBtn.click();
+    } else {
+      alert(`❌ 發送失敗：${data.message}`);
+      sendInvitationBtn.disabled = false;
+      sendInvitationBtn.textContent = `📧 寄出邀請信給所有人 (${list.length} 人)`;
+    }
+  } catch (error) {
+    console.error("發送邀請信錯誤:", error);
+    alert(`❌ 發送時發生錯誤：${error.message}`);
+    sendInvitationBtn.disabled = false;
+    sendInvitationBtn.textContent = `📧 寄出邀請信給所有人 (${list.length} 人)`;
+  }
 }
