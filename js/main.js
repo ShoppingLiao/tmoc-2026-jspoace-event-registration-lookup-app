@@ -11,6 +11,20 @@ const pendingListDiv = document.getElementById("pendingList");
 
 let currentEmail = "";
 
+// 監聽 email 輸入框，只有輸入 TMOCTMOC 時才顯示管理按鈕
+emailInput.addEventListener("input", () => {
+  const value = emailInput.value.trim();
+  const adminSection = document.querySelector(".admin-section");
+  
+  if (value === "TMOCTMOC") {
+    adminSection.style.display = "block";
+  } else {
+    adminSection.style.display = "none";
+    // 如果隱藏管理區，也隱藏待邀請清單
+    pendingListDiv.classList.add("hidden");
+  }
+});
+
 // 查詢序號
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -188,10 +202,11 @@ getPendingListBtn.addEventListener("click", async () => {
   try {
     getPendingListBtn.disabled = true;
     getPendingListBtn.textContent = "載入中...";
-    
+
     // 隱藏之前的結果
     resultDiv.classList.add("hidden");
-    pendingListDiv.innerHTML = '<p style="text-align: center; color: #666;">📋 載入中，請稍候...</p>';
+    pendingListDiv.innerHTML =
+      '<p style="text-align: center; color: #666;">📋 載入中，請稍候...</p>';
     pendingListDiv.classList.remove("hidden");
 
     const response = await fetch(API_URL, {
