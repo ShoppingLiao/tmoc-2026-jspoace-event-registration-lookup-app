@@ -6,6 +6,8 @@ const form = document.getElementById("lookupForm");
 const emailInput = document.getElementById("email");
 const resendBtn = document.getElementById("resendBtn");
 const resultDiv = document.getElementById("result");
+const getPendingListBtn = document.getElementById("getPendingListBtn");
+const pendingListDiv = document.getElementById("pendingList");
 
 let currentEmail = "";
 
@@ -179,4 +181,92 @@ function showRegistrationInfo(data) {
   resultDiv.className = "result success";
   resultDiv.innerHTML = html;
   resultDiv.classList.remove("hidden");
+}
+
+// 取得待邀請清單
+getPendingListBtn.addEventListener("click", async () => {
+  try {
+    getPendingListBtn.disabled = true;
+    getPendingListBtn.textContent = "載入中...";
+    
+    // 隱藏之前的結果
+    resultDiv.classList.add("hidden");
+    pendingListDiv.innerHTML = '<p style="text-align: center; color: #666;">📋 載入中，請稍候...</p>';
+    pendingListDiv.classList.remove("hidden");
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getPendingList",
+      }),
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const text = await response.text();
+    console.log("Response text:", text);
+
+    const data = JSON.parse(text);
+    console.log("Parsed data:", data);
+
+    if (data.status === "success") {
+      showPendingList(data.data);
+    } else {
+      pendingListDiv.innerHTML = `<p style="text-align: center; color: #c62828;">❌ ${data.message}</p>`;
+    }
+  } catch (error) {
+    console.error("取得清單錯誤:", error);
+    pendingListDiv.innerHTML = `<p style="text-align: center; color: #c62828;">❌ 載入失敗：${error.message}</p>`;
+  } finally {
+    getPendingListBtn.disabled = false;
+    getPendingListBtn.textContent = "📋 查看待邀請清單";
+  }
+});
+
+// 顯示待邀請清單
+function showPendingList(list) {
+  if (!list || list.length === 0) {
+    pendingListDiv.innerHTML = `
+      <h3>📋 待邀請清單</h3>
+      <p style="text-align: center; color: #666; padding: 20px;">目前沒有待邀請的報名資料</p>
+    `;
+    return;
+  }
+
+  let html = `
+    <h3>📋 待邀請清單 <span class="pending-count">${list.length}</span></h3>
+    <div style="margin-top: 15px;">
+  `;
+
+  list.forEach((item, index) => {
+    const timestamp = item.timestamp
+      ? new Date(item.timestamp).toLocaleString("zh-TW", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      : "無資料";
+
+    html += `
+      <div class="pending-item">
+        <div class="pending-serial">${item.serialNumber || "無序號"}</div>
+        <div class="pending-info">
+          <div><strong>姓名：</strong>${item.name || "無資料"}</div>
+          <div><strong>Email：</strong>${item.email || "無資料"}</div>
+          ${item.phone ? `<div><strong>電話：</strong>${item.phone}</div>` : ""}
+          <div><strong>報名時間：</strong>${timestamp}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  pendingListDiv.innerHTML = html;
 }
