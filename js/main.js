@@ -287,35 +287,37 @@ function showPendingList(list) {
 
   html += `</div>`;
   pendingListDiv.innerHTML = html;
-  
+
   // 綁定寄出邀請信按鈕事件
   const sendInvitationBtn = document.getElementById("sendInvitationBtn");
   if (sendInvitationBtn) {
-    sendInvitationBtn.addEventListener("click", () => sendInvitationEmails(list));
+    sendInvitationBtn.addEventListener("click", () =>
+      sendInvitationEmails(list)
+    );
   }
 }
 
 // 寄出邀請信
 async function sendInvitationEmails(list) {
   const sendInvitationBtn = document.getElementById("sendInvitationBtn");
-  
+
   // 確認對話框
   if (!confirm(`確定要寄出邀請信給 ${list.length} 位報名者嗎？`)) {
     return;
   }
-  
+
   try {
     sendInvitationBtn.disabled = true;
     sendInvitationBtn.textContent = "📧 發送中，請稍候...";
-    
+
     // 收集所有 email
-    const emails = list.map(item => item.email).filter(email => email);
-    
+    const emails = list.map((item) => item.email).filter((email) => email);
+
     const response = await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify({
         action: "sendInvitations",
-        emails: emails
+        emails: emails,
       }),
     });
 
@@ -332,7 +334,11 @@ async function sendInvitationEmails(list) {
     console.log("Parsed data:", data);
 
     if (data.status === "success") {
-      alert(`✅ 成功！已寄出 ${data.sentCount || emails.length} 封邀請信，並更新狀態為「已完成」`);
+      alert(
+        `✅ 成功！已寄出 ${
+          data.sentCount || emails.length
+        } 封邀請信，並更新狀態為「已完成」`
+      );
       // 重新載入清單
       getPendingListBtn.click();
     } else {
